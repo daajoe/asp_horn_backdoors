@@ -5,7 +5,6 @@ logging.config.fileConfig('logging.conf')
 
 import cplex
 from cplex.exceptions import CplexError
-from lp_parse import Constraint
 
 def add_vars(l,ilp):
     lb=[0.0]*len(l.symtab.tab.keys())

@@ -27,11 +27,13 @@ def options():
     usage  = "usage: %prog [options] [files]"
     parser = optparse.OptionParser(usage=usage)
     parser.add_option("-o", "--output", dest="out", type="string", help="Output file", default=None)
+    parser.add_option("-c", "--clasp", dest="clasp", action="store_true", help="Use clasp for solving", default=False)
     opts, files = parser.parse_args(sys.argv[1:])
     return opts, files
 
 from lp_parse import *
-from horn_backdoor_cplex import *
+from horn_backdoor_cplex import compute_backdoor as compute_backdoor_cplex
+from horn_backdoor_clasp import compute_backdoor as compute_backdoor_clasp
 
 @contextlib.contextmanager
 def transparent_stdout(filename=None):
@@ -45,14 +47,18 @@ def transparent_stdout(filename=None):
         if fh is not sys.stdout:
             fh.close()
 
-def parse_and_run(f,output):
+def parse_and_run(f,output,clasp):
     logging.info('Parsing starts')
     p   = Parser()
     try:
         l = p.parse('x_', f)
         logging.info('Parsing done')
         logging.info('Starting ILP')
-        horn_backdoor=compute_backdoor(l)
+        horn_backdoor=None
+        if clasp:
+            horn_backdoor=compute_backdoor_clasp(l)
+        else:
+            horn_backdoor=compute_backdoor_cplex(l)
         logging.warning('='*80)
         logging.warning('HORN BACKDOOR'.rjust(30))
         logging.warning('='*80)
@@ -70,9 +76,9 @@ def parse_and_run(f,output):
 if __name__ == '__main__':
     opts,files=options()
     if sys.stdin:
-        parse_and_run(sys.stdin,opts.out)
+        parse_and_run(sys.stdin,opts.out,opts.clasp)
     for f in files:
-        parse_and_run(sys.stdin,opts.out)
+        parse_and_run(sys.stdin,opts.out,opts.clasp)
     exit(1)
 
 
