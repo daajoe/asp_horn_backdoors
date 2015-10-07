@@ -78,7 +78,7 @@ if __name__ == '__main__':
     if sys.stdin:
         parse_and_run(sys.stdin,opts.out,opts.clasp)
     for f in files:
-        parse_and_run(sys.stdin,opts.out,opts.clasp)
+        parse_and_run(f,opts.out,opts.clasp)
     exit(1)
 
 
