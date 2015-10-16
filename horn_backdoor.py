@@ -15,6 +15,7 @@
 # <http://www.gnu.org/licenses/>.
 #
 import logging
+import select
 import logging.config
 logging.config.fileConfig('logging.conf')
 
@@ -75,10 +76,11 @@ def parse_and_run(f,output,clasp):
 
 if __name__ == '__main__':
     opts,files=options()
-    if sys.stdin:
+    if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
         parse_and_run(sys.stdin,opts.out,opts.clasp)
     for f in files:
-        parse_and_run(f,opts.out,opts.clasp)
+        sin = fileinput.input(f)
+        parse_and_run(sin,opts.out,opts.clasp)
     exit(1)
 
 
