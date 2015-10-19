@@ -16,6 +16,12 @@ def add_vars(l,ilp):
 def add_edge_constraint(l,ilp,v1,v2):
     logging.debug('%s-%s', l.symtab.tab.get(v1,None),l.symtab.tab.get(v2,None))
     vars = map(str,[v1,v2])
+    
+    if not l.symtab.tab.get(v1,None):
+        ilp.variables.add(obj=[1.0],types=["B"], names=map(str,[v1]))
+    if not l.symtab.tab.get(v2,None):
+        ilp.variables.add(obj=[1.0],types=["B"], names=map(str,[v2]))
+
     ilp.linear_constraints.add(lin_expr = [cplex.SparsePair(ind = vars, val = [1, 1])],
                                senses='G', 
                                rhs = [1],
@@ -49,8 +55,7 @@ def compute_backdoor(l):
         logging.info(ilp.solution.status[ilp.solution.get_status()])
         logging.warning('='*80)        
         logging.warning('Solution value  = %s', ilp.solution.get_objective_value())
-
-        return compress(imap(lambda x: l.symtab.tab[int(x)],ilp.variables.get_names()),ilp.solution.get_values())
+        return compress(imap(lambda x: l.symtab[int(x)],ilp.variables.get_names()),ilp.solution.get_values())
     except CplexError, e:
         logging.error(e)
         return
