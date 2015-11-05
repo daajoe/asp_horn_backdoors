@@ -29,6 +29,7 @@ def options():
     parser = optparse.OptionParser(usage=usage)
     parser.add_option("-o", "--output", dest="out", type="string", help="Output file", default=None)
     parser.add_option("-c", "--clasp", dest="clasp", action="store_true", help="Use clasp for solving", default=False)
+    parser.add_option("-t", "--threads", dest="threads", type="int", help="Maximum number of threads", default=None)
     opts, files = parser.parse_args(sys.argv[1:])
     return opts, files
 
@@ -48,7 +49,7 @@ def transparent_stdout(filename=None):
         if fh is not sys.stdout:
             fh.close()
 
-def parse_and_run(f,output,clasp):
+def parse_and_run(f,output,clasp,threads):
     logging.info('Parsing starts')
     p   = Parser()
     try:
@@ -57,9 +58,9 @@ def parse_and_run(f,output,clasp):
         logging.info('Starting ILP')
         horn_backdoor=None
         if clasp:
-            horn_backdoor=compute_backdoor_clasp(l)
+            horn_backdoor=compute_backdoor_clasp(l,threads)
         else:
-            horn_backdoor=compute_backdoor_cplex(l)
+            horn_backdoor=compute_backdoor_cplex(l,threads)
         logging.warning('='*80)
         logging.warning('HORN BACKDOOR'.rjust(30))
         logging.warning('='*80)
@@ -77,7 +78,7 @@ def parse_and_run(f,output,clasp):
 if __name__ == '__main__':
     opts,files=options()
     if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
-        parse_and_run(sys.stdin,opts.out,opts.clasp)
+        parse_and_run(sys.stdin,opts.out,opts.clasp,opts.threads)
     for f in files:
         sin = fileinput.input(f)
         parse_and_run(sin,opts.out,opts.clasp)

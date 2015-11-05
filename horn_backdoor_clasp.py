@@ -33,7 +33,9 @@ def define_edges(l,ctl):
         for a,c in izip(ifilter(lambda x: l.symtab.tab.get(x,None),r.head),imap(lambda x: -x, neg)):
             ctl.ground([('edge',[a,c])])
 
-def compute_backdoor(l):
+def compute_backdoor(l,threads):
+    if threads:
+        raise NotImplemented
     logging.info('Generate LP instance')
     ctl = gringo.Control()
     ctl.load("vc.lp")
