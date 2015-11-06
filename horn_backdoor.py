@@ -70,18 +70,18 @@ def parse_and_run(f,output,clasp,threads):
             fh.flush()
 
     except IOError:
-        stderr.write("error reading from: {0}\n".format(sin.filename()))
-        stderr.flush()
+        sys.stderr.write("error reading from: {0}\n".format(sin.filename()))
+        sys.stderr.flush()
         raise IOError
 
 
 if __name__ == '__main__':
     opts,files=options()
-    if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
-        parse_and_run(sys.stdin,opts.out,opts.clasp,opts.threads)
+    #if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
+    #    parse_and_run(sys.stdin,opts.out,opts.clasp,opts.threads)
     for f in files:
         sin = fileinput.input(f)
-        parse_and_run(sin,opts.out,opts.clasp)
+        parse_and_run(sin,opts.out,opts.clasp,opts.threads)
     exit(1)
 
 
