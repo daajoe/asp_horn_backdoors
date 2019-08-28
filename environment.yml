@@ -1,0 +1,9 @@
+name: pace
+channels:
+  - anaconda
+  - potassco
+  - conda-forge
+  - defaults
+dependencies:
+  - backports.lzma>=0.0.8
+  - clingo
